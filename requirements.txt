@@ -1,0 +1,10 @@
+google-adk[gcp]>=1.3.0,<2.0.0
+python-dotenv==1.1.0
+aiohttp
+Deprecated
+google-cloud-bigquery
+google-cloud-billing
+google-cloud-billing-budgets
+google-cloud-secret-manager
+google-cloud-recommender
+requests
