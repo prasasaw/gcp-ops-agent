@@ -5,8 +5,8 @@ import base64
 import requests
 from google.adk.tools import ToolContext
 
-from main_agent.utils.memory import write_handled_finding
-from main_agent.utils.secrets import get_secret
+from ..utils.memory import write_handled_finding
+from ..utils.secrets import get_secret
 
 
 async def create_fix_branch(

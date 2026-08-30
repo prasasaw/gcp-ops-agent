@@ -46,17 +46,21 @@ SET AGENT_ENGINE_ID=<numeric id>
 ## Setup
 
 ```cmd
-pip install -r requirements.txt
+pip install -r main_agent/requirements.txt
 ```
+
+> The deployable dependency list lives inside the agent folder so `adk deploy cloud_run`
+> picks it up automatically (it looks for `requirements.txt` next to `agent.py`). There is
+> intentionally no second copy at the repo root.
 
 Required env vars for local runs:
 
 ```cmd
+SET GEMINI_MODEL=gemini-3.5-flash
 SET GOOGLE_CLOUD_PROJECT=your-project
-SET GOOGLE_CLOUD_LOCATION=us-central1
-SET GEMINI_MODEL=gemini-flash-latest
+SET GOOGLE_CLOUD_LOCATION=europe-west2
 :: optional — enables persistent Memory Bank; without it, local InMemory fallback is used
-SET AGENT_ENGINE_ID=1234567890
+SET AGENT_ENGINE_ID=5598757189100503040
 ```
 
 ## Running locally
@@ -98,19 +102,35 @@ to use the in-process fallback.
 
 ## Deploy to GCP
 
-Set the required environment variables before deploying:
+Set once per shell:
 
 ```cmd
 SET GOOGLE_CLOUD_PROJECT=prasad-gcp4-project
-SET GOOGLE_CLOUD_LOCATION=europe-west1
-SET AGENT_PATH=./main_agent
+SET GOOGLE_CLOUD_LOCATION=europe-west2
 SET SERVICE_NAME=gcp-ops-service
 SET APP_NAME=gcp_ops_agent
-SET AGENT_ENGINE_ID=1234567890
+SET AGENT_PATH=./main_agent
+SET GEMINI_MODEL=gemini-3.5-flash
+SET AGENT_ENGINE_ID=5598757189100503040
 ```
 
+Build, push, and set env vars in one command. Everything after `--` is forwarded to
+`gcloud run deploy`:
+
 ```cmd
-adk deploy cloud_run --project=%GOOGLE_CLOUD_PROJECT% --region=%GOOGLE_CLOUD_LOCATION% --service_name=%SERVICE_NAME% --app_name %APP_NAME% --with_ui %AGENT_PATH%
+adk deploy cloud_run --project=%GOOGLE_CLOUD_PROJECT% --region=%GOOGLE_CLOUD_LOCATION% --service_name=%SERVICE_NAME% --app_name %APP_NAME% --with_ui %AGENT_PATH% ^
+  -- --set-env-vars=GOOGLE_GENAI_USE_VERTEXAI=TRUE,GOOGLE_CLOUD_PROJECT=%GOOGLE_CLOUD_PROJECT%,GOOGLE_CLOUD_LOCATION=%GOOGLE_CLOUD_LOCATION%,GEMINI_MODEL=%GEMINI_MODEL%,AGENT_ENGINE_ID=%AGENT_ENGINE_ID%,PROJECT_LOCATION=%GOOGLE_CLOUD_LOCATION%
+```
+
+> `main_agent/.env` is excluded from the deployed image by `.gitignore` (Cloud Build honors
+> it), so the container has no env vars unless you pass them here. Every re-deploy replaces
+> the full env list on the new revision.
+
+Verify the running revision has the env applied:
+
+```cmd
+gcloud run services describe %SERVICE_NAME% --region=%GOOGLE_CLOUD_LOCATION% --project=%GOOGLE_CLOUD_PROJECT% --format="value(status.latestReadyRevisionName)"
+gcloud run revisions describe <revision-name-from-above> --region=%GOOGLE_CLOUD_LOCATION% --project=%GOOGLE_CLOUD_PROJECT% --format="value(spec.containers[0].env)"
 ```
 
 > Note: persistent chat continuity across Cloud Run restarts (in-flight conversation resume)

@@ -5,7 +5,7 @@ import os
 from google.adk.tools import ToolContext
 from google.cloud import recommender_v1
 
-from main_agent.utils.memory import find_handled_finding
+from ....utils.memory import find_handled_finding
 
 _GLOBAL_RECOMMENDERS = [
     "google.iam.policy.Recommender",

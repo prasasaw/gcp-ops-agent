@@ -2,7 +2,7 @@
 
 from google.adk.tools import ToolContext
 
-from main_agent.utils.memory import find_handled_finding, write_handled_finding
+from ....utils.memory import find_handled_finding, write_handled_finding
 
 _ALLOWED_STATUSES = {"resolved", "snoozed", "wont_fix"}
 
