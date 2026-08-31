@@ -11,7 +11,7 @@ The focus extends from merely detecting issues to actively remediating them, bri
 
 ## The Architecture
 
-| ![Architecture](img/architecture.png) |
+| ![Architecture](architecture.png) |
 | :---: |
 
 The architecture consists of a root agent (`main_agent`) that delegates tasks to specialized sub-agents with their respective tools. 
@@ -94,4 +94,18 @@ After deploying the agent to Cloud Run, you can test it by opening the `dev-ui` 
 
 ```
 https://gcp-ops-service-664004376005.europe-west2.run.app/dev-ui/?app=gcp_ops_agent
+```
+## Test prompt
+You can have a multi-turn conversation with the agent using prompts like:
+
+```
+list security recommendations
+```
+```
+Create me a JIRA and Github worktree for a certain security recommendation
+```
+Or a single-turn prompt like:
+
+```
+list the most critical security recommendation and bring it to my developer workflow (JIRA creation and Github worktree)
 ```

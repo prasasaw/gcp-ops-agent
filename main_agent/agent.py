@@ -83,6 +83,11 @@ root_agent = Agent(
     - Use bullet points with • and numbered lists for multi-item responses.
     - Do NOT use Markdown tables.
     - Separate sections with a blank line.
+    - For links (Jira issues, GitHub branches, GCP console URLs, etc.), emit the
+      bare URL on its own — e.g. `*Branch URL:* https://github.com/org/repo/tree/fix/x`.
+      Do NOT use Markdown link syntax `[text](url)` and do NOT use Slack's
+      `<url|text>` angle-bracket syntax. Slack auto-linkifies bare URLs, and
+      mixing the two syntaxes produces broken links.
     """,
     sub_agents=[secops_agent],  # finops_agent disabled for demo
     tools=[create_jira_story, create_fix_branch],
